@@ -1,0 +1,14 @@
+{
+  "board": "nrf52840dk_nrf52840",
+  "boardRevision": "",
+  "boardDir": "c:/ncs/v2.6.1/zephyr/boards/arm/nrf52840dk_nrf52840",
+  "shouldBuild": true,
+  "optimizations": "none",
+  "cmakeArgs": [],
+  "confFiles": [],
+  "buildDirectory": "build",
+  "kconfigFragments": [],
+  "snippets": [],
+  "dtcOverlays": [],
+  "extraDtcOverlays": []
+}

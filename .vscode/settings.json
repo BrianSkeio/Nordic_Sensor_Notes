@@ -6,5 +6,6 @@
     },
     "nrf-connect.debugging.bindings": {
         "${workspaceFolder}/build": "Launch build"
-    }
+    },
+    "nrf-connect.topdir": "${nrf-connect.sdk:2.8.0}"
 }

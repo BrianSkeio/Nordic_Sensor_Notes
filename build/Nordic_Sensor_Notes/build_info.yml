@@ -1,0 +1,50 @@
+cmake:
+  application:
+    configuration-dir: D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes
+    source-dir: D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes
+  board:
+    name: nrf52840dk
+    qualifiers: nrf52840
+    revision: 
+  devicetree:
+    bindings-dirs:
+     - C:/ncs/v2.8.0/nrf/dts/bindings
+     - C:/ncs/v2.8.0/zephyr/dts/bindings
+    files:
+     - C:/ncs/v2.8.0/zephyr/boards/nordic/nrf52840dk/nrf52840dk_nrf52840.dts
+     - D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/nrf52840dk_nrf52840.overlay
+    include-dirs:
+     - C:/ncs/v2.8.0/nrf/include
+     - C:/ncs/v2.8.0/nrf/dts
+     - C:/ncs/v2.8.0/zephyr/include
+     - C:/ncs/v2.8.0/zephyr/include/zephyr
+     - C:/ncs/v2.8.0/zephyr/dts/common
+     - C:/ncs/v2.8.0/zephyr/dts/x86
+     - C:/ncs/v2.8.0/zephyr/dts/xtensa
+     - C:/ncs/v2.8.0/zephyr/dts/sparc
+     - C:/ncs/v2.8.0/zephyr/dts/riscv
+     - C:/ncs/v2.8.0/zephyr/dts/posix
+     - C:/ncs/v2.8.0/zephyr/dts/nios2
+     - C:/ncs/v2.8.0/zephyr/dts/arm64
+     - C:/ncs/v2.8.0/zephyr/dts/arm
+     - C:/ncs/v2.8.0/zephyr/dts/arc
+     - C:/ncs/v2.8.0/zephyr/dts
+    user-files:
+     - D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/nrf52840dk_nrf52840.overlay
+  kconfig:
+    files:
+     - C:/ncs/v2.8.0/zephyr/boards/nordic/nrf52840dk/nrf52840dk_nrf52840_defconfig
+     - D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/prj.conf
+     - D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/Nordic_Sensor_Notes/zephyr/.config.sysbuild
+    user-files:
+     - D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/prj.conf
+  toolchain:
+    name: zephyr
+    path: C:/ncs/toolchains/2d382dcd92/opt/zephyr-sdk
+  vendor-specific:
+    nordic:
+      svdfile: C:/ncs/v2.8.0/modules/hal/nordic/nrfx/mdk/nrf52840.svd
+  zephyr:
+    version: 3.7.99
+    zephyr-base: C:/ncs/v2.8.0/zephyr
+version: 0.1.0

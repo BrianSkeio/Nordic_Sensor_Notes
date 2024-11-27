@@ -1,0 +1,13 @@
+# Target labels
+ Nordic_Sensor_Notes
+# Source files and their labels
+D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/CMakeFiles/Nordic_Sensor_Notes
+D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/CMakeFiles/Nordic_Sensor_Notes.rule
+D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/CMakeFiles/Nordic_Sensor_Notes-complete.rule
+D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/Nordic_Sensor_Notes-prefix/src/Nordic_Sensor_Notes-stamp/Nordic_Sensor_Notes-build.rule
+D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/Nordic_Sensor_Notes-prefix/src/Nordic_Sensor_Notes-stamp/Nordic_Sensor_Notes-configure.rule
+D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/Nordic_Sensor_Notes-prefix/src/Nordic_Sensor_Notes-stamp/Nordic_Sensor_Notes-download.rule
+D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/Nordic_Sensor_Notes-prefix/src/Nordic_Sensor_Notes-stamp/Nordic_Sensor_Notes-install.rule
+D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/Nordic_Sensor_Notes-prefix/src/Nordic_Sensor_Notes-stamp/Nordic_Sensor_Notes-mkdir.rule
+D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/Nordic_Sensor_Notes-prefix/src/Nordic_Sensor_Notes-stamp/Nordic_Sensor_Notes-patch.rule
+D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/Nordic_Sensor_Notes-prefix/src/Nordic_Sensor_Notes-stamp/Nordic_Sensor_Notes-update.rule

@@ -1,0 +1,7 @@
+default: Nordic_Sensor_Notes
+build_dir: D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build
+domains:
+  - name: Nordic_Sensor_Notes
+    build_dir: D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/Nordic_Sensor_Notes
+flash_order:
+  - Nordic_Sensor_Notes

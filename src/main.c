@@ -1,9 +1,3 @@
-/*
- * Copyright (c) 2016 Intel Corporation
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/devicetree.h>
@@ -67,7 +61,7 @@ void BME280_comp_temperature(void)
 
 	st_SensorCalibration.t_fine = var1 + var2;
 	st_BME280_SensorMeasurements.m_fTemperate = (st_SensorCalibration.t_fine * 5 + 128) >> 8;
-	st_BME280_SensorMeasurements.m_fTemperate = st_BME280_SensorMeasurements.m_fTemperate / 100.0;
+	st_BME280_SensorMeasurements.m_fTemperate = st_BME280_SensorMeasurements.m_fTemperate / (float)100.0;
 }
 
 void BME280_comp_Press(void)
@@ -749,7 +743,7 @@ int main(void)
 			printf("Humidity: %d, Pressure: %d, Temperature: %.2f\n", 
 				st_BME280_SensorMeasurements.m_uiHumidity,
 				st_BME280_SensorMeasurements.m_uiPressure,
-				st_BME280_SensorMeasurements.m_fTemperate);
+				(double)st_BME280_SensorMeasurements.m_fTemperate);
 			printf("CO2: %d, tVOC: %d\n", CO2Data, tVOCData);
 			printf("Prox value[%d] Ambient light level[%d] White level[%d]\n", proxValue, ambientValue, whiteValue);
 			printf("\n");

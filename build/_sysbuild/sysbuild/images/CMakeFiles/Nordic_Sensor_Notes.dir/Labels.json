@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/CMakeFiles/Nordic_Sensor_Notes"
+		},
+		{
+			"file" : "D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/CMakeFiles/Nordic_Sensor_Notes.rule"
+		},
+		{
+			"file" : "D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/CMakeFiles/Nordic_Sensor_Notes-complete.rule"
+		},
+		{
+			"file" : "D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/Nordic_Sensor_Notes-prefix/src/Nordic_Sensor_Notes-stamp/Nordic_Sensor_Notes-build.rule"
+		},
+		{
+			"file" : "D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/Nordic_Sensor_Notes-prefix/src/Nordic_Sensor_Notes-stamp/Nordic_Sensor_Notes-configure.rule"
+		},
+		{
+			"file" : "D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/Nordic_Sensor_Notes-prefix/src/Nordic_Sensor_Notes-stamp/Nordic_Sensor_Notes-download.rule"
+		},
+		{
+			"file" : "D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/Nordic_Sensor_Notes-prefix/src/Nordic_Sensor_Notes-stamp/Nordic_Sensor_Notes-install.rule"
+		},
+		{
+			"file" : "D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/Nordic_Sensor_Notes-prefix/src/Nordic_Sensor_Notes-stamp/Nordic_Sensor_Notes-mkdir.rule"
+		},
+		{
+			"file" : "D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/Nordic_Sensor_Notes-prefix/src/Nordic_Sensor_Notes-stamp/Nordic_Sensor_Notes-patch.rule"
+		},
+		{
+			"file" : "D:/Code/Nordic/CheckinToGitHub/Nordic_Sensor_Notes/build/_sysbuild/sysbuild/images/Nordic_Sensor_Notes-prefix/src/Nordic_Sensor_Notes-stamp/Nordic_Sensor_Notes-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"Nordic_Sensor_Notes"
+		],
+		"name" : "Nordic_Sensor_Notes"
+	}
+}

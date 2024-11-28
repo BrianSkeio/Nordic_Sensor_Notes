@@ -10,5 +10,6 @@ Development Nordic nRF52840 DK via I2C interface to connect sensors of notes
 
 
 - Create a new bluetooth services(Heart rate) to transfer data.
+- More information in "Result" folder.
 
 ![Nordic-BLE Energy](https://github.com/user-attachments/assets/fba27e27-def4-459f-8097-a1f85c75392b)

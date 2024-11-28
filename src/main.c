@@ -1,7 +1,16 @@
-#include <zephyr/kernel.h>
-#include <zephyr/drivers/gpio.h>
+#include <zephyr/device.h>
 #include <zephyr/devicetree.h>
+#include <zephyr/kernel.h>
+
 #include <zephyr/drivers/i2c.h>
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/bluetooth/bluetooth.h>
+#include <zephyr/bluetooth/hci.h>
+#include <zephyr/bluetooth/conn.h>
+#include <zephyr/bluetooth/uuid.h>
+#include <zephyr/bluetooth/gatt.h>
+#include <zephyr/bluetooth/services/bas.h>
+#include <zephyr/bluetooth/services/hrs.h>
 
 #include "BME280/CBME280.h"
 #include "CCS811/CCCS811.h"
@@ -14,6 +23,11 @@
 #define LED0_NODE DT_ALIAS(led0)
 #define I2C_NODE DT_NODELABEL(i2c0)
 
+// UUIDs for HRS
+#define HRS_SERVICE_UUID BT_UUID_DECLARE_16(0x180D)
+#define HRS_MEASUREMENT_UUID BT_UUID_DECLARE_16(0x2A37)
+#define DATA_SIZE 20
+
 typedef enum
 {
 	ERR_SUCCESS,
@@ -24,6 +38,175 @@ typedef enum
 }ErrorCode_e;
 
 static const struct device *i2c_dev = DEVICE_DT_GET(I2C_NODE);
+static struct bt_conn *current_conn = NULL;
+
+struct heart_rate_measurement
+{
+    uint8_t custom_data[DATA_SIZE]; // user define data
+};
+
+static struct heart_rate_measurement hr_measurement = {
+    .custom_data = {0}, // user define data
+};
+
+// GATT Service Definition
+BT_GATT_SERVICE_DEFINE(hrs_service,
+    BT_GATT_PRIMARY_SERVICE(HRS_SERVICE_UUID),
+    BT_GATT_CHARACTERISTIC(HRS_MEASUREMENT_UUID,
+        BT_GATT_CHRC_NOTIFY,
+        BT_GATT_PERM_READ,
+        NULL, NULL, NULL),
+    BT_GATT_CCC(NULL, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
+);
+
+static const struct bt_data ad[] = {
+    BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
+};
+
+#if !defined(CONFIG_BT_EXT_ADV)
+static const struct bt_data sd[] = {
+	BT_DATA(BT_DATA_NAME_COMPLETE, CONFIG_BT_DEVICE_NAME, sizeof(CONFIG_BT_DEVICE_NAME) - 1),
+};
+#endif
+
+static ATOMIC_DEFINE(state, 2U);
+
+#define STATE_CONNECTED    1U
+#define STATE_DISCONNECTED 2U
+
+static void connected(struct bt_conn *conn, uint8_t err)
+{
+    if (err)
+		printk("Connection failed, err 0x%02x %s\n", err, bt_hci_err_to_str(err));
+	else
+	{
+		printk("Connected\n");
+		current_conn = bt_conn_ref(conn);
+		(void)atomic_set_bit(state, STATE_CONNECTED);
+	}
+}
+
+static void disconnected(struct bt_conn *conn, uint8_t reason)
+{
+	printk("Disconnected, reason 0x%02x %s\n", reason, bt_hci_err_to_str(reason));
+    if (current_conn) {
+        bt_conn_unref(current_conn);
+        current_conn = NULL;
+    }
+
+	current_conn = NULL;
+	(void)atomic_set_bit(state, STATE_DISCONNECTED);
+}
+
+BT_CONN_CB_DEFINE(conn_callbacks) = {
+	.connected = connected,
+	.disconnected = disconnected,
+};
+
+static void auth_cancel(struct bt_conn *conn)
+{
+	char addr[BT_ADDR_LE_STR_LEN] = {0};
+	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
+	printk("Pairing cancelled: %s\n", addr);
+}
+
+static struct bt_conn_auth_cb auth_cb_display = {
+	.cancel = auth_cancel,
+};
+
+#if defined(CONFIG_GPIO)
+/* The devicetree node identifier for the "led0" alias. */
+#define LED0_NODE DT_ALIAS(led0)
+
+#if DT_NODE_HAS_STATUS_OKAY(LED0_NODE)
+#define HAS_LED 1
+static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
+#define BLINK_ONOFF K_MSEC(500)
+
+static struct k_work_delayable blink_work;
+static bool led_is_on;
+
+static void blink_timeout(struct k_work *work)
+{
+	led_is_on = !led_is_on;
+	gpio_pin_set(led.port, led.pin, (int)led_is_on);
+	k_work_schedule(&blink_work, BLINK_ONOFF);
+}
+
+static int blink_setup(void)
+{
+	int err;
+	printk("Checking LED device...");
+	if (!gpio_is_ready_dt(&led)) 
+	{
+		printk("failed.\n");
+		return -EIO;
+	}
+	printk("done.\n");
+
+	printk("Configuring GPIO pin...");
+	err = gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE);
+	if (err)
+	{
+		printk("failed.\n");
+		return -EIO;
+	}
+	printk("done.\n");
+
+	k_work_init_delayable(&blink_work, blink_timeout);
+	return 0;
+}
+
+static void blink_start(void)
+{
+	printk("Start blinking LED...\n");
+	led_is_on = false;
+	gpio_pin_set(led.port, led.pin, (int)led_is_on);
+	k_work_schedule(&blink_work, BLINK_ONOFF);
+}
+
+static void blink_stop(void)
+{
+	struct k_work_sync work_sync;
+	printk("Stop blinking LED.\n");
+	k_work_cancel_delayable_sync(&blink_work, &work_sync);
+
+	/* Keep LED on */
+	led_is_on = true;
+	gpio_pin_set(led.port, led.pin, (int)led_is_on);
+}
+#endif /* LED0_NODE */
+#endif /* CONFIG_GPIO */
+
+static void hrs_notify(uint16_t CO2Data, uint16_t tVOCData, 
+	uint32_t Humidity, uint32_t Pressure, uint16_t Temperate, 
+	uint16_t ProxValue, uint16_t AmbientValue, uint16_t WhiteValue)
+{
+	hr_measurement.custom_data[0] = CO2Data & 0xFF;
+	hr_measurement.custom_data[1] = (CO2Data >> 8) & 0xFF;
+	hr_measurement.custom_data[2] = tVOCData & 0xFF;
+	hr_measurement.custom_data[3] = (tVOCData >> 8) & 0xFF;
+	hr_measurement.custom_data[4] = Humidity & 0xFF;
+	hr_measurement.custom_data[5] = (Humidity >> 8) & 0xFF;
+	hr_measurement.custom_data[6] = Pressure & 0xFF;
+	hr_measurement.custom_data[7] = (Pressure >> 8) & 0xFF;
+	hr_measurement.custom_data[8] = (Pressure >> 16) & 0xFF;
+	hr_measurement.custom_data[9] = (Pressure >> 24) & 0xFF;
+	hr_measurement.custom_data[10] = Temperate & 0xFF;
+	hr_measurement.custom_data[11] = (Temperate >> 8) & 0xFF;
+	hr_measurement.custom_data[12] = ProxValue & 0xFF;
+	hr_measurement.custom_data[13] = (ProxValue >> 8) & 0xFF;
+	hr_measurement.custom_data[14] = AmbientValue & 0xFF;
+	hr_measurement.custom_data[15] = (AmbientValue >> 8) & 0xFF;
+	hr_measurement.custom_data[16] = WhiteValue & 0xFF;
+	hr_measurement.custom_data[17] = (WhiteValue >> 8) & 0xFF;
+
+    int err = bt_gatt_notify(current_conn, &hrs_service.attrs[1], &hr_measurement, ARRAY_SIZE(hr_measurement.custom_data));
+    if (err)
+        printk("Failed to notify heart rate (err %d)\n", err);
+    else
+        printk("Heart Rate Notification sent with custom data\n");    
+}
 
 /*
  * A build error on this line means your board is unsupported.
@@ -66,7 +249,7 @@ void BME280_comp_temperature(void)
 
 void BME280_comp_Press(void)
 {
-	uint8_t buffer[3];
+	uint8_t buffer[3] = {0};
 	uint8_t write_reg_buffer[1] = {BME280_PRESSURE_MSB_REG};
 	i2c_write_read(i2c_dev, BME280_I2C_ADDR_SEC, write_reg_buffer, 1, buffer, 3);
 	st_SensorCalibration.ucomp_pressure = ((uint32_t)buffer[0] << 12) | ((uint32_t)buffer[1] << 4) | ((buffer[2] >> 4) & 0x0F);
@@ -123,6 +306,7 @@ bool IsCCS811Ready(void)
 	printf("CCS811 id: 0x%02X\n", readBuffData[0]);
 	return true;
 }
+
 bool BME280_RRegister(uint8_t value, uint8_t* pRetValue)
 {
 	uint8_t readBuffData[1] = {0};
@@ -707,6 +891,36 @@ int main(void)
 {
 	printf("Search device is connect or not.\n");
 
+	int err = bt_enable(NULL);
+	if (err)
+	{
+		printk("Bluetooth init failed (err %d)\n", err);
+		return 0;
+	}
+
+	printk("Bluetooth initialized\n");
+	bt_conn_auth_cb_register(&auth_cb_display);
+
+#if !defined(CONFIG_BT_EXT_ADV)
+	printk("Starting Legacy Advertising (connectable and scannable)\n");
+    err = bt_le_adv_start(BT_LE_ADV_CONN_ONE_TIME, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));
+	if (err)
+	{
+		printk("Advertising failed to start (err %d)\n", err);
+		return 0;
+	}
+#endif	
+	
+	printk("Advertising successfully started\n");
+
+#if defined(HAS_LED)
+	err = blink_setup();
+	if (err)
+		return 0;
+
+	blink_start();
+#endif /* HAS_LED */
+
 	if(!device_is_ready(i2c_dev))
 	{
 		printf("I2C mode not ready.\n");
@@ -748,6 +962,40 @@ int main(void)
 			printf("Prox value[%d] Ambient light level[%d] White level[%d]\n", proxValue, ambientValue, whiteValue);
 			printf("\n");
 			
+			if(current_conn)
+			{
+				hrs_notify(CO2Data, tVOCData, 
+					st_BME280_SensorMeasurements.m_uiHumidity,
+					st_BME280_SensorMeasurements.m_uiPressure,
+					(uint16_t)(st_BME280_SensorMeasurements.m_fTemperate*(float)100.0),
+					proxValue, ambientValue, whiteValue);
+			}
+
+			if (atomic_test_and_clear_bit(state, STATE_CONNECTED))
+			{
+				/* Connected callback executed */
+
+				#if defined(HAS_LED)
+							blink_stop();
+				#endif /* HAS_LED */
+			}
+			else if (atomic_test_and_clear_bit(state, STATE_DISCONNECTED))
+			{
+				#if !defined(CONFIG_BT_EXT_ADV)
+					printk("Starting Legacy Advertising (connectable and scannable)\n");
+					err = bt_le_adv_start(BT_LE_ADV_CONN_ONE_TIME, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));
+					if (err)
+					{
+						printk("Advertising failed to start (err %d)\n", err);
+						return 0;
+					}
+				#endif /* CONFIG_BT_EXT_ADV */
+
+				#if defined(HAS_LED)
+							blink_start();
+				#endif /* HAS_LED */
+			}
+
 		} while (false);
 
 		k_msleep(SLEEP_TIME_MS);

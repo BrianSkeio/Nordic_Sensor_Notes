@@ -13,3 +13,12 @@ Development Nordic nRF52840 DK via I2C interface to connect sensors of notes
 - More information in "Result" folder.
 
 ![Nordic-BLE Energy](https://github.com/user-attachments/assets/fba27e27-def4-459f-8097-a1f85c75392b)
+
+
+- Create IOS APP(Swift code) to show these sensor data.
+  * Scan bluetooth device
+  * Select, connect, disconnect bluetooth or only scan SensorEx device name.
+  * config timer paramters
+  * Data list
+  * Graph
+  * Other...

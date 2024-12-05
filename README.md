@@ -7,7 +7,7 @@ Development Nordic nRF52840 DK via I2C interface to connect sensors of notes
 - ams CCS811
 - SparkFun Proximity Sensor Breakout - 20cm, VCNL4040 (Qwiic)
 
-Development Bluetooth
+Development Bluetooth (Bluetooth branch)
 - Create Bluetooth service for Heart rate to transfer sensor data.
 - Study Bluetooth LE stack (GATT).
 - Modify Heart rate data format for requests.

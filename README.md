@@ -13,3 +13,7 @@ Development Nordic nRF52840 DK via I2C interface to connect sensors of notes
 - More information in "Result" folder.
 
 ![Nordic-BLE Energy](https://github.com/user-attachments/assets/fba27e27-def4-459f-8097-a1f85c75392b)
+
+
+Hward environment
+![HW-Env](https://github.com/user-attachments/assets/513e3ce7-a6d1-4bee-af68-2a869b462338)
